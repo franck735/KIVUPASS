@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créer un événement · event243</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --gold-dim: rgba(201,168,76,0.12);
+  --dark: #0A0A0B;
+  --dark-2: #111114;
+  --dark-3: #18181C;
+  --dark-4: #222228;
+  --dark-5: #2C2C34;
+  --text: #F0EDE8;
+  --text-muted: #888890;
+  --text-dim: #555560;
+  --success: #56B870;
+  --danger: #E05656;
+  --airtel: #E02020;
+  --orange: #FF6900;
+  --vodacom: #CC0000;
+  --africel: #7B1FA2;
+  --radius: 12px;
+  --radius-lg: 18px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+* { cursor: none !important; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* Noise */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9990; opacity: 0.4;
+}
+
+/* Cursor */
+#cursor { position:fixed; width:8px; height:8px; background:var(--gold); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:transform 0.1s; }
+#cursor-ring { position:fixed; width:32px; height:32px; border:1px solid rgba(201,168,76,0.5); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:all 0.15s ease; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--dark-2); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 64px;
+  background: rgba(10,10,11,0.9); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--dark-4);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; z-index: 100;
+}
+
+.topbar-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.6rem; color: var(--gold);
+  letter-spacing: 3px; cursor: none !important;
+}
+
+.btn-back {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 18px;
+  background: var(--dark-3); border: 1px solid var(--dark-5);
+  border-radius: var(--radius); color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
+  cursor: none !important; transition: all 0.25s;
+}
+
+.btn-back:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── LAYOUT ── */
+.page-wrap {
+  min-height: 100vh;
+  padding-top: 64px;
+  display: flex;
+}
+
+.page-sidebar {
+  position: sticky;
+  top: 64px;
+  align-self: flex-start;
+  width: 320px;
+  flex-shrink: 0;
+  padding: 40px 32px;
+  min-height: calc(100vh - 64px);
+  border-right: 1px solid var(--dark-4);
+  background: var(--dark-2);
+}
+
+.page-main {
+  flex: 1;
+  padding: 40px 48px;
+  max-width: 680px;
+}
+
+/* ── SIDEBAR CONTENT ── */
+.sidebar-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 300;
+  line-height: 1.15; color: var(--text);
+  margin-bottom: 8px;
+}
+
+.sidebar-heading em { color: var(--gold-light); font-style: italic; }
+
+.sidebar-subtext {
+  font-size: 0.85rem; color: var(--text-muted);
+  line-height: 1.6; margin-bottom: 28px;
+}
+
+/* Fee Display */
+.fee-card {
+  background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.04));
+  border: 1px solid rgba(201,168,76,0.25);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fee-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.fee-label {
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+
+.fee-amount {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 3.2rem; line-height: 1;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: 2px;
+}
+
+.fee-description {
+  font-size: 0.78rem; color: var(--text-dim);
+  margin-top: 6px; line-height: 1.5;
+}
+
+/* Checklist */
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+
+.checklist li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;
+}
+
+.check-icon {
+  width: 18px; height: 18px; flex-shrink: 0;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; color: var(--gold); margin-top: 1px;
+}
+
+.sidebar-tip {
+  margin-top: 24px;
+  padding: 14px;
+  background: var(--dark-3);
+  border: 1px solid var(--dark-5);
+  border-left: 2px solid var(--gold);
+  border-radius: var(--radius);
+  font-size: 0.78rem; color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── FORM ── */
+.form-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem; font-weight: 400;
+  color: var(--text); margin-bottom: 4px;
+}
+
+.form-subtitle {
+  font-size: 0.85rem; color: var(--text-muted); margin-bottom: 32px;
+}
+
+/* Auth block */
+.auth-block {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  background: var(--dark-3);
+  border: 1px solid var(--dark-4);
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+}
+
+.auth-block-avatar {
+  width: 36px; height: 36px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', cursive; font-size: 1rem; color: var(--gold);
+}
+
+.auth-block-info { flex: 1; }
+.auth-block-name { font-size: 0.875rem; font-weight: 500; color: var(--text); }
+.auth-block-role { font-size: 0.75rem; color: var(--gold); }
+
+/* Form sections */
+.form-section {
+  margin-bottom: 28px;
+}
+
+.form-section-label {
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.form-section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: var(--dark-4);
+}
+
+/* Fields */
+.field { margin-bottom: 14px; }
+
+.field label {
+  display: block; font-size: 0.72rem;
+  font-weight: 500; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--text-dim);
+  margin-bottom: 7px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%; padding: 12px 14px;
+  background: var(--dark-3); border: 1px solid var(--dark-4);
+  border-radius: var(--radius); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+}
+
+.field input::placeholder,
+.field textarea::placeholder { color: var(--text-dim); }
+.field select option { background: var(--dark-3); }
+.field textarea { resize: vertical; min-height: 96px; line-height: 1.6; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* Image Upload */
+.image-upload-zone {
+  border: 1px dashed var(--dark-5);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  text-align: center;
+  cursor: none !important;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+
+.image-upload-zone:hover {
+  border-color: rgba(201,168,76,0.4);
+  background: rgba(201,168,76,0.03);
+}
+
+.image-upload-zone.has-image { padding: 0; border-style: solid; border-color: var(--dark-5); }
+
+.upload-icon { font-size: 2rem; opacity: 0.4; margin-bottom: 8px; }
+.upload-title { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; }
+.upload-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
+
+.image-preview-img {
+  width: 100%; height: 180px; object-fit: cover;
+  border-radius: calc(var(--radius) - 1px);
+  display: block;
+}
+
+.image-preview-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.25s;
+  border-radius: calc(var(--radius) - 1px);
+}
+
+.image-upload-zone:hover .image-preview-overlay { opacity: 1; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 24px; border: none; border-radius: var(--radius);
+  font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+  letter-spacing: 0.4px; transition: all 0.25s;
+  cursor: none !important; position: relative;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--dark);
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(201,168,76,0.3); }
+.btn-gold:disabled { opacity: 0.6; transform: none; box-shadow: none; }
+
+.btn-full { width: 100%; }
+
+.btn-ghost {
+  background: transparent; border: 1px solid var(--dark-5); color: var(--text-muted);
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Submit Block */
+.submit-block {
+  margin-top: 32px;
+  padding: 20px;
+  background: var(--dark-2);
+  border: 1px solid var(--dark-4);
+  border-radius: var(--radius);
+}
+
+.submit-block-text {
+  font-size: 0.78rem; color: var(--text-dim);
+  margin-top: 10px; text-align: center;
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 500; padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--dark-2);
+  border: 1px solid var(--dark-4);
+  border-radius: var(--radius-lg);
+  width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  animation: modalIn 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 24px 28px; border-bottom: 1px solid var(--dark-4);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 500; color: var(--text);
+}
+
+.modal-close {
+  width: 32px; height: 32px;
+  background: var(--dark-4); border: none;
+  border-radius: 8px; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  cursor: none !important; font-size: 1rem; transition: all 0.2s;
+}
+.modal-close:hover { background: var(--dark-5); color: var(--text); }
+
+.modal-body { padding: 28px; }
+
+/* Payment Steps */
+.pay-steps {
+  display: flex; align-items: center; margin-bottom: 28px;
+}
+
+.pay-step {
+  display: flex; align-items: center; gap: 8px; flex: 1;
+}
+
+.pay-step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--dark-4); border: 1px solid var(--dark-5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; color: var(--text-muted); font-weight: 600;
+  flex-shrink: 0; transition: all 0.3s;
+}
+
+.pay-step-label { font-size: 0.78rem; color: var(--text-dim); transition: color 0.3s; }
+.pay-step.active .pay-step-num { background: var(--gold); border-color: var(--gold); color: var(--dark); }
+.pay-step.active .pay-step-label { color: var(--gold); }
+.pay-step.done .pay-step-num { background: var(--success); border-color: var(--success); color: #fff; }
+.pay-step.done .pay-step-label { color: var(--success); }
+.pay-connector { flex:1; height:1px; background:var(--dark-5); margin: 0 8px; }
+
+/* Amount display */
+.amount-card {
+  text-align: center; padding: 24px;
+  background: var(--dark-3); border-radius: var(--radius);
+  margin-bottom: 20px;
+}
+
+.amount-label {
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 6px;
+}
+
+.amount-number {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 4rem; line-height: 1; letter-spacing: 3px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.amount-note {
+  font-size: 0.78rem; color: var(--text-muted);
+  margin-top: 8px; line-height: 1.5;
+}
+
+/* Event summary in payment */
+.event-summary-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; background: var(--dark-4);
+  border-radius: var(--radius); margin-bottom: 20px;
+  font-size: 0.85rem; color: var(--text-muted);
+}
+
+.event-summary-icon {
+  width: 32px; height: 32px; background: var(--gold-dim);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+
+/* Payment methods grid */
+.methods-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-bottom: 20px;
+}
+
+.method-btn {
+  padding: 14px 10px;
+  background: var(--dark-3); border: 1px solid var(--dark-5);
+  border-radius: var(--radius);
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  cursor: none !important; transition: all 0.25s;
+}
+
+.method-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+.method-btn.selected {
+  border-color: var(--gold); background: rgba(201,168,76,0.1);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
+}
+
+.method-emoji { font-size: 1.5rem; }
+.method-label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+.method-btn.selected .method-label { color: var(--gold); }
+
+/* Phone field in payment */
+.phone-field input {
+  width: 100%; padding: 13px 14px;
+  background: var(--dark-3); border: 1px solid var(--dark-5);
+  border-radius: var(--radius); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s;
+}
+
+.phone-field input:focus { border-color: var(--gold); }
+.phone-field input::placeholder { color: var(--text-dim); }
+
+/* Payment success */
+.pay-success {
+  text-align: center; padding: 12px 0;
+}
+
+.success-ring {
+  width: 72px; height: 72px;
+  background: rgba(86,184,112,0.08);
+  border: 2px solid rgba(86,184,112,0.25);
+  border-radius: 50%; margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(86,184,112,0.2); }
+  50% { box-shadow: 0 0 0 12px rgba(86,184,112,0); }
+}
+
+.pay-success h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 400; color: var(--text);
+}
+
+.pay-success p { font-size: 0.875rem; color: var(--text-muted); margin: 8px 0 20px; }
+
+.pay-receipt {
+  background: var(--dark-3); border: 1px solid var(--dark-4);
+  border-radius: var(--radius); padding: 16px; text-align: left;
+  margin-bottom: 20px;
+}
+
+.receipt-header {
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px;
+  text-align: center;
+}
+
+.receipt-row {
+  display: flex; justify-content: space-between;
+  font-size: 0.82rem; padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.receipt-row:last-child { border-bottom: none; }
+.receipt-label { color: var(--text-dim); }
+.receipt-value { color: var(--text-muted); font-weight: 500; }
+
+/* Auth required */
+.auth-required-screen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: calc(100vh - 64px);
+  padding: 40px 20px; text-align: center;
+}
+
+.auth-required-card {
+  background: var(--dark-2); border: 1px solid var(--dark-4);
+  border-radius: var(--radius-lg); padding: 48px 40px;
+  max-width: 440px; width: 100%;
+}
+
+.auth-required-icon {
+  font-size: 3rem; margin-bottom: 16px; opacity: 0.5;
+}
+
+.auth-required-card h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem; font-weight: 400; color: var(--text);
+  margin-bottom: 8px;
+}
+
+.auth-required-card p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 24px; }
+
+/* Toast */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px;
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 9990;
+}
+
+.toast {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; background: var(--dark-2);
+  border: 1px solid var(--dark-4); border-radius: var(--radius);
+  font-size: 0.875rem; color: var(--text);
+  animation: toastIn 0.35s cubic-bezier(0.4,0,0.2,1);
+  min-width: 260px; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.warning { border-left: 3px solid var(--gold); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid rgba(0,0,0,0.2); border-top-color: var(--dark);
+  border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .page-sidebar { display: none; }
+  .page-main { padding: 28px 20px; max-width: 100%; }
+  .topbar { padding: 0 20px; }
+  .field-row, .field-row-3 { grid-template-columns: 1fr; }
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="toast-container" id="toasts"></div>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-logo" onclick="goBack()">EVENT243</div>
+  <button class="btn-back" onclick="goBack()">← Retour</button>
+</header>
+
+<!-- Auth Required -->
+<div id="auth-wall" class="hidden">
+  <div style="padding-top:64px;">
+    <div class="auth-required-screen">
+      <div class="auth-required-card">
+        <div class="auth-required-icon">🔒</div>
+        <h2>Accès réservé</h2>
+        <p>Vous devez être connecté en tant qu'organisateur pour créer un événement sur event243.</p>
+        <button class="btn btn-gold btn-full" onclick="goBack()">Se connecter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Form -->
+<div id="main-page" class="hidden">
+  <div class="page-wrap">
+
+    <!-- Sidebar -->
+    <aside class="page-sidebar">
+      <div class="sidebar-heading">
+        Publiez votre<br>prochain<br><em>événement</em>
+      </div>
+      <p class="sidebar-subtext">
+        Créez, gérez et vendez des billets pour vos événements en RDC — en quelques minutes.
+      </p>
+
+      <div class="fee-card">
+        <div class="fee-label">Frais de publication</div>
+        <div class="fee-amount">20$</div>
+        <div class="fee-description">Paiement unique par événement. Accepté via Airtel, Orange, Vodacom et Africel.</div>
+      </div>
+
+      <ul class="checklist">
+        <li><span class="check-icon">✓</span>Visibilité immédiate sur la plateforme</li>
+        <li><span class="check-icon">✓</span>Système de billetterie inclus</li>
+        <li><span class="check-icon">✓</span>QR code et validation automatisés</li>
+        <li><span class="check-icon">✓</span>Dashboard de suivi des ventes</li>
+        <li><span class="check-icon">✓</span>Paiements collectés directement</li>
+      </ul>
+
+      <div class="sidebar-tip">
+        💡 <strong style="color:var(--gold);">Conseil :</strong> Les événements avec une belle affiche et une description détaillée génèrent jusqu'à 3× plus de ventes.
+      </div>
+    </aside>
+
+    <!-- Form -->
+    <main class="page-main">
+
+      <div class="form-title">Créer un événement</div>
+      <p class="form-subtitle">Remplissez les informations de votre événement</p>
+
+      <!-- User block -->
+      <div class="auth-block" id="user-info-block">
+        <div class="auth-block-avatar" id="user-avatar">?</div>
+        <div class="auth-block-info">
+          <div class="auth-block-name" id="user-name">—</div>
+          <div class="auth-block-role">🎪 Organisateur · event243</div>
+        </div>
+      </div>
+
+      <form id="event-form" onsubmit="handleFormSubmit(event)">
+
+        <div class="form-section">
+          <div class="form-section-label">Informations principales</div>
+          <div class="field">
+            <label>Nom de l'événement *</label>
+            <input type="text" id="ev-title" placeholder="Ex: Concert Afrobeat Night" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Catégorie *</label>
+              <select id="ev-category" required>
+                <option value="concert">🎵 Concert</option>
+                <option value="conference">📚 Conférence</option>
+                <option value="sport">⚽ Sport</option>
+                <option value="festival">🎭 Festival</option>
+                <option value="autre">📌 Autre</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Prix du billet *</label>
+              <input type="number" id="ev-price" placeholder="25" required min="0" step="0.01">
+            </div>
+          </div>
+          <div class="field">
+            <label>Devise</label>
+            <select id="ev-currency">
+              <option value="USD">$ US Dollar</option>
+              <option value="CDF">FC Franc Congolais</option>
+              <option value="EUR">€ Euro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-label">Lieu &amp; Date</div>
+          <div class="field">
+            <label>Adresse / Lieu *</label>
+            <input type="text" id="ev-address" placeholder="Ex: Palais du Peuple, Kinshasa" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Date *</label>
+              <input type="date" id="ev-date" required>
+            </div>
+            <div class="field">
+              <label>Heure *</label>
+              <input type="time" id="ev-time" required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Nombre de places</label>
+            <input type="number" id="ev-capacity" placeholder="500" min="1" value="100">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-label">💰 Paiement des billets</div>
+          <div style="background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.2); border-radius:12px; padding:16px; margin-bottom:14px;">
+            <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.6; margin-bottom:12px;">
+              Les acheteurs de billets enverront le paiement <strong style="color:var(--text);">directement sur votre numéro mobile money</strong>. Vous recevez l'argent sans intermédiaire.
+            </p>
+          </div>
+          <div class="field">
+            <label>Votre numéro Mobile Money *</label>
+            <input type="tel" id="ev-payment-phone" placeholder="Ex: +243 81 234 5678" required>
+            <div style="font-size:0.72rem; color:var(--text-dim); margin-top:5px;">Ce numéro sera affiché aux acheteurs pour envoyer le paiement</div>
+          </div>
+          <div class="field">
+            <label>Opérateur préféré</label>
+            <select id="ev-payment-operator">
+              <option value="airtel">📱 Airtel Money</option>
+              <option value="orange">🟠 Orange Money</option>
+              <option value="vodacom">🔴 Vodacom</option>
+              <option value="africel">🔵 Africel</option>
+              <option value="tous">✅ Tous les opérateurs acceptés</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nom du titulaire du compte</label>
+            <input type="text" id="ev-payment-name" placeholder="Ex: Jean Mupenda">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-label">Description &amp; Visuels</div>
+          <div class="field">
+            <label>Description de l'événement</label>
+            <textarea id="ev-desc" placeholder="Décrivez votre événement, les artistes, le programme, ce que les participants vivront…"></textarea>
+          </div>
+          <div class="field">
+            <label>Affiche / Image</label>
+            <div class="image-upload-zone" id="upload-zone" onclick="document.getElementById('ev-img-input').click()">
+              <input type="file" id="ev-img-input" accept="image/*" style="display:none" onchange="previewImage(event)">
+              <div id="upload-placeholder">
+                <div class="upload-icon">🖼</div>
+                <div class="upload-title">Glissez ou cliquez pour ajouter une image</div>
+                <div class="upload-hint">PNG, JPG — max 5 MB</div>
+              </div>
+              <img id="img-preview" class="image-preview-img hidden" alt="Preview">
+              <div class="image-preview-overlay hidden" id="img-overlay">
+                <span style="color:white; font-size:0.875rem; background:rgba(0,0,0,0.5); padding:6px 14px; border-radius:50px;">Changer l'image</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="submit-block">
+          <button type="submit" class="btn btn-gold btn-full" id="submit-btn">
+            💳 Payer 20$ &amp; Publier l'événement
+          </button>
+          <div class="submit-block-text">
+            En cliquant, vous procédez au paiement sécurisé de 20$ via mobile money.
+          </div>
+        </div>
+
+      </form>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════
+     PAYMENT MODAL
+══════════════════════ -->
+<div class="modal-overlay" id="pay-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Paiement de publication</div>
+      <button class="modal-close" onclick="closePayModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="pay-steps">
+        <div class="pay-step active" id="ps-1">
+          <div class="pay-step-num">1</div>
+          <div class="pay-step-label">Résumé</div>
+        </div>
+        <div class="pay-connector"></div>
+        <div class="pay-step" id="ps-2">
+          <div class="pay-step-num">2</div>
+          <div class="pay-step-label">Paiement</div>
+        </div>
+        <div class="pay-connector"></div>
+        <div class="pay-step" id="ps-3">
+          <div class="pay-step-num">3</div>
+          <div class="pay-step-label">Confirmation</div>
+        </div>
+      </div>
+
+      <!-- Step 1 -->
+      <div id="modal-s1">
+        <div class="amount-card">
+          <div class="amount-label">Frais de publication</div>
+          <div class="amount-number">20<span style="font-size:2rem;">$</span></div>
+          <div class="amount-note">Ce paiement est requis pour publier votre événement et le rendre visible à tous les utilisateurs.</div>
+        </div>
+        <div class="event-summary-row">
+          <div class="event-summary-icon">🎪</div>
+          <div>
+            <div style="font-weight:500; color:var(--text); font-size:0.875rem;" id="ms1-title">—</div>
+            <div style="font-size:0.78rem; color:var(--text-dim);" id="ms1-meta">—</div>
+          </div>
+        </div>
+        <button class="btn btn-gold btn-full" onclick="setModalStep(2)">Continuer</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="modal-s2" class="hidden">
+        <!-- Instructions de paiement manuel -->
+        <div style="background:linear-gradient(135deg,rgba(201,168,76,0.12),rgba(201,168,76,0.04)); border:1px solid rgba(201,168,76,0.3); border-radius:12px; padding:20px; margin-bottom:18px;">
+          <div style="font-size:0.65rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:10px;">📤 Envoyez le paiement</div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px; line-height:1.6;">
+            Envoyez <strong style="color:var(--gold);">20 USD</strong> au numéro suivant via mobile money :
+          </p>
+          <div style="background:var(--dark-4); border-radius:10px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <div>
+              <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:3px; text-transform:uppercase; letter-spacing:1px;">Numéro du propriétaire</div>
+              <div style="font-family:'Bebas Neue',cursive; font-size:1.6rem; letter-spacing:3px; color:var(--text);" id="owner-number-display">+243 XXX XXX XXX</div>
+            </div>
+            <button onclick="copyOwnerNumber()" style="background:var(--dark-5); border:1px solid var(--dark-4); color:var(--text-muted); padding:8px 12px; border-radius:8px; font-size:0.75rem; cursor:none !important; transition:all 0.2s;" onmouseenter="this.style.borderColor='var(--gold)'; this.style.color='var(--gold)'" onmouseleave="this.style.borderColor='var(--dark-4)'; this.style.color='var(--text-muted)'">
+              📋 Copier
+            </button>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <span style="background:rgba(224,32,32,0.15); border:1px solid rgba(224,32,32,0.3); color:#ff7070; padding:5px 12px; border-radius:20px; font-size:0.75rem;">📱 Airtel Money</span>
+            <span style="background:rgba(255,105,0,0.15); border:1px solid rgba(255,105,0,0.3); color:#ff9040; padding:5px 12px; border-radius:20px; font-size:0.75rem;">🟠 Orange Money</span>
+            <span style="background:rgba(204,0,0,0.15); border:1px solid rgba(204,0,0,0.3); color:#ff6060; padding:5px 12px; border-radius:20px; font-size:0.75rem;">🔴 Vodacom</span>
+            <span style="background:rgba(123,31,162,0.15); border:1px solid rgba(123,31,162,0.3); color:#b060e0; padding:5px 12px; border-radius:20px; font-size:0.75rem;">🔵 Africel</span>
+          </div>
+        </div>
+        <!-- Confirmation -->
+        <div style="background:var(--dark-3); border:1px solid var(--dark-5); border-radius:12px; padding:18px; margin-bottom:16px;">
+          <div style="font-size:0.72rem; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px;">✅ Confirmer votre paiement</div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">Votre opérateur utilisé</label>
+            <div class="methods-grid" style="grid-template-columns:1fr 1fr; gap:8px;">
+              <button class="method-btn" onclick="pickMethod('airtel', this)" style="padding:10px 8px;">
+                <span class="method-emoji" style="font-size:1rem;">📱</span>
+                <span class="method-label" style="font-size:0.75rem;">Airtel</span>
+              </button>
+              <button class="method-btn" onclick="pickMethod('orange', this)" style="padding:10px 8px;">
+                <span class="method-emoji" style="font-size:1rem;">🟠</span>
+                <span class="method-label" style="font-size:0.75rem;">Orange</span>
+              </button>
+              <button class="method-btn" onclick="pickMethod('vodacom', this)" style="padding:10px 8px;">
+                <span class="method-emoji" style="font-size:1rem;">🔴</span>
+                <span class="method-label" style="font-size:0.75rem;">Vodacom</span>
+              </button>
+              <button class="method-btn" onclick="pickMethod('africel', this)" style="padding:10px 8px;">
+                <span class="method-emoji" style="font-size:1rem;">🔵</span>
+                <span class="method-label" style="font-size:0.75rem;">Africel</span>
+              </button>
+            </div>
+          </div>
+          <div id="phone-section" class="hidden">
+            <div style="margin-bottom:10px;">
+              <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">Votre numéro d'envoi</label>
+              <input type="tel" id="pay-phone" placeholder="Ex: +243 81 234 5678" style="width:100%; padding:11px 13px; background:var(--dark-4); border:1px solid var(--dark-5); border-radius:10px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.875rem; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--dark-5)'">
+            </div>
+            <div style="margin-bottom:14px;">
+              <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">ID / Référence de transaction <span style="color:var(--text-dim);">(fourni par votre opérateur)</span></label>
+              <input type="text" id="pay-txid" placeholder="Ex: TXN123456789" style="width:100%; padding:11px 13px; background:var(--dark-4); border:1px solid var(--dark-5); border-radius:10px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.875rem; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--dark-5)'">
+            </div>
+            <!-- PROOF OF PAYMENT UPLOAD -->
+            <div style="margin-bottom:14px;">
+              <label style="display:block; font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">📷 Preuve de paiement <span style="color:var(--gold);">*</span> <span style="color:var(--text-dim);">(photo du SMS de confirmation)</span></label>
+              <div id="proof-upload-zone" onclick="document.getElementById('proof-img-input').click()" style="border:1px dashed var(--dark-5); border-radius:10px; padding:20px; text-align:center; cursor:none !important; transition:all 0.2s; background:var(--dark-4);" onmouseenter="this.style.borderColor='rgba(201,168,76,0.4)'; this.style.background='rgba(201,168,76,0.04)'" onmouseleave="this.style.borderColor='var(--dark-5)'; this.style.background='var(--dark-4)'">
+                <input type="file" id="proof-img-input" accept="image/*" style="display:none" onchange="previewProof(event)">
+                <div id="proof-placeholder">
+                  <div style="font-size:1.8rem; opacity:0.4; margin-bottom:6px;">📱</div>
+                  <div style="font-size:0.8rem; color:var(--text-muted);">Cliquez pour ajouter la photo</div>
+                  <div style="font-size:0.72rem; color:var(--text-dim); margin-top:3px;">Screenshot SMS · Photo reçu · etc.</div>
+                </div>
+                <img id="proof-preview" style="display:none; max-width:100%; max-height:160px; border-radius:8px; object-fit:contain;" alt="Preuve">
+              </div>
+            </div>
+            <button class="btn btn-gold btn-full" id="pay-btn" onclick="doPayment()">
+              <span id="pay-btn-label">✅ J'ai envoyé les 20$ — Confirmer</span>
+            </button>
+          </div>
+        </div>
+        <p style="font-size:0.73rem; color:var(--text-dim); text-align:center; line-height:1.5;">⚡ Après vérification de votre paiement, votre événement sera publié immédiatement.</p>
+      </div>
+
+      <!-- Step 3 -->
+      <div id="modal-s3" class="hidden">
+        <div class="pay-success">
+          <div class="success-ring">⏳</div>
+          <h3>Demande envoyée !</h3>
+          <p>Votre demande de publication est en attente de validation par l'administrateur. Vous serez notifié dès qu'elle sera approuvée.</p>
+          <div class="pay-receipt">
+            <div class="receipt-header">✦ Récapitulatif de la demande ✦</div>
+            <div class="receipt-row"><span class="receipt-label">Montant payé</span><span class="receipt-value">20$</span></div>
+            <div class="receipt-row"><span class="receipt-label">Opérateur</span><span class="receipt-value" id="receipt-method">—</span></div>
+            <div class="receipt-row"><span class="receipt-label">Réf. Transaction</span><span class="receipt-value" id="receipt-id" style="font-family:monospace; font-size:0.78rem;">—</span></div>
+          </div>
+          <div style="background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.2); border-radius:10px; padding:12px 14px; margin-top:12px; font-size:0.8rem; color:var(--text-muted); text-align:left;">
+            ⏱ Délai de validation : généralement moins de 24h<br>
+            📧 Vous recevrez une confirmation sur votre email
+          </div>
+          <button class="btn btn-ghost btn-full" style="margin-top:16px;" onclick="closePayModal(); goBack();">
+            ← Retour à l'accueil
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════
+   CURSOR
+══════════════════════════════════ */
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+(function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.addEventListener('mousedown', () => {
+  cursor.style.transform = 'translate(-50%,-50%) scale(0.7)';
+});
+document.addEventListener('mouseup', () => {
+  cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+});
+
+/* ══════════════════════════════════
+   DB / STATE
+══════════════════════════════════ */
+const K = { CU: 'ev243_cu', EVENTS: 'ev243_events', PAYMENTS: 'ev243_payments' };
+const OWNER_NUMBER = '+243 998 765 432'; // ← Numéro du propriétaire (event243)
+const ls = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => localStorage.setItem(k, JSON.stringify(v))
+};
+
+let CU = ls.get(K.CU);
+let pendingData = null;
+let chosenMethod = null;
+let paymentRecord = null;
+
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+function toast(msg, type = 'success') {
+  const icons = { success: '✓', error: '✕', warning: '⚠' };
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='0.3s'; setTimeout(() => t.remove(), 300); }, 3200);
+}
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+function init() {
+  if (!CU || CU.role !== 'organizer') {
+    document.getElementById('auth-wall').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('main-page').classList.remove('hidden');
+  document.getElementById('user-avatar').textContent = CU.name.charAt(0).toUpperCase();
+  document.getElementById('user-name').textContent = CU.name;
+  // Set min date to today
+  document.getElementById('ev-date').min = new Date().toISOString().split('T')[0];
+}
+
+init();
+
+/* ══════════════════════════════════
+   NAVIGATION
+══════════════════════════════════ */
+function goBack() {
+  window.location.href = 'index.html';
+}
+
+/* ══════════════════════════════════
+   IMAGE PREVIEW
+══════════════════════════════════ */
+function previewImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = document.getElementById('img-preview');
+    img.src = reader.result;
+    img.classList.remove('hidden');
+    document.getElementById('upload-placeholder').classList.add('hidden');
+    document.getElementById('img-overlay').classList.remove('hidden');
+    document.getElementById('upload-zone').classList.add('has-image');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ══════════════════════════════════
+   FORM SUBMIT
+══════════════════════════════════ */
+function handleFormSubmit(e) {
+  e.preventDefault();
+  if (!CU || CU.role !== 'organizer') { toast('Accès non autorisé', 'error'); return; }
+  const imgPreview = document.getElementById('img-preview');
+  pendingData = {
+    title:    document.getElementById('ev-title').value.trim(),
+    category: document.getElementById('ev-category').value,
+    price:    parseFloat(document.getElementById('ev-price').value),
+    currency: document.getElementById('ev-currency').value,
+    address:  document.getElementById('ev-address').value.trim(),
+    date:     document.getElementById('ev-date').value,
+    time:     document.getElementById('ev-time').value,
+    capacity: parseInt(document.getElementById('ev-capacity').value) || 100,
+    description: document.getElementById('ev-desc').value.trim(),
+    image: imgPreview.src && !imgPreview.classList.contains('hidden') ? imgPreview.src : '',
+    paymentPhone:    document.getElementById('ev-payment-phone').value.trim(),
+    paymentOperator: document.getElementById('ev-payment-operator').value,
+    paymentName:     document.getElementById('ev-payment-name').value.trim()
+  };
+  // Pre-fill modal
+  document.getElementById('ms1-title').textContent = pendingData.title;
+  document.getElementById('ms1-meta').textContent = `${pendingData.date} · ${pendingData.address}`;
+  document.getElementById('owner-number-display').textContent = OWNER_NUMBER;
+  // Reset modal
+  setModalStep(1);
+  chosenMethod = null;
+  paymentRecord = null;
+  document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('phone-section').classList.add('hidden');
+  document.getElementById('pay-phone').value = CU.phone || '';
+  if(document.getElementById('pay-txid')) document.getElementById('pay-txid').value = '';
+  openPayModal();
+}
+
+/* ══════════════════════════════════
+   PAYMENT MODAL
+══════════════════════════════════ */
+function openPayModal() {
+  document.getElementById('pay-modal').classList.add('open');
+}
+
+function closePayModal() {
+  document.getElementById('pay-modal').classList.remove('open');
+}
+
+document.getElementById('pay-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('pay-modal')) closePayModal();
+});
+
+function setModalStep(n) {
+  ['modal-s1','modal-s2','modal-s3'].forEach((id,i) => {
+    document.getElementById(id).classList.toggle('hidden', i+1 !== n);
+  });
+  [1,2,3].forEach(i => {
+    const el = document.getElementById(`ps-${i}`);
+    el.className = 'pay-step' + (i === n ? ' active' : i < n ? ' done' : '');
+  });
+}
+
+function pickMethod(m, btn) {
+  chosenMethod = m;
+  document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('phone-section').classList.remove('hidden');
+}
+
+function previewProof(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = document.getElementById('proof-preview');
+    img.src = reader.result;
+    img.style.display = 'block';
+    document.getElementById('proof-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function copyOwnerNumber() {
+  navigator.clipboard.writeText(OWNER_NUMBER).then(() => toast('Numéro copié !', 'success')).catch(() => toast('Copiez manuellement : ' + OWNER_NUMBER, 'warning'));
+}
+
+function doPayment() {
+  const phone = document.getElementById('pay-phone').value.trim();
+  const txid  = document.getElementById('pay-txid') ? document.getElementById('pay-txid').value.trim() : '';
+  const proofImg = document.getElementById('proof-preview');
+  const proofData = proofImg && proofImg.style.display !== 'none' ? proofImg.src : null;
+  if (!phone) { toast('Entrez votre numéro d\'envoi', 'error'); return; }
+  if (!txid)  { toast('Entrez l\'ID de transaction fourni par votre opérateur', 'error'); return; }
+  if (!proofData) { toast('Ajoutez une photo de preuve de paiement', 'error'); return; }
+  if (!chosenMethod) { toast('Sélectionnez votre opérateur', 'error'); return; }
+  const btn = document.getElementById('pay-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Envoi de la demande…';
+  setTimeout(() => {
+    const mNames = { airtel:'Airtel Money', orange:'Orange Money', vodacom:'Vodacom', africel:'Africel' };
+    // Save publication request
+    const reqId = 'REQ-' + Date.now().toString().slice(-8);
+    const request = {
+      id: reqId,
+      eventId: 'evt_' + Date.now(),
+      eventTitle:       pendingData.title,
+      eventCategory:    pendingData.category,
+      eventAddress:     pendingData.address,
+      eventDate:        pendingData.date,
+      eventTime:        pendingData.time,
+      eventPrice:       pendingData.price,
+      eventCurrency:    pendingData.currency,
+      eventCapacity:    pendingData.capacity,
+      eventDescription: pendingData.description,
+      eventImage:       pendingData.image,
+      organizerId:      CU.id,
+      organizerName:    CU.name,
+      organizerEmail:   CU.email,
+      organizerPhone:   CU.phone || phone,
+      orgPayPhone:      pendingData.paymentPhone,
+      orgPayName:       pendingData.paymentName,
+      orgPayOperator:   pendingData.paymentOperator,
+      payPhone:    phone,
+      payOperator: mNames[chosenMethod],
+      txRef:       txid.toUpperCase().replace(/\s/g,''),
+      proofImage:  proofData,
+      status:      'pending',
+      createdAt:   Date.now()
+    };
+    const reqs = JSON.parse(localStorage.getItem('ev243_pubreqs') || '[]');
+    reqs.unshift(request);
+    localStorage.setItem('ev243_pubreqs', JSON.stringify(reqs));
+    document.getElementById('receipt-method').textContent = mNames[chosenMethod];
+    document.getElementById('receipt-id').textContent = request.txRef;
+    setModalStep(3);
+    btn.disabled = false;
+    btn.innerHTML = '✅ J\'ai envoyé les 20$ — Confirmer';
+    toast('Demande envoyée ! En attente de validation.', 'success');
+  }, 1500);
+}
+</script>
+</body>
+</html>
